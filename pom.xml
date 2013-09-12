@@ -4,14 +4,21 @@
 	<groupId>org.apache.naming.factory</groupId>
 	<artifactId>expression-factory</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<inceptionYear>2013</inceptionYear>
 	
+	<organization>
+		<name>Apache Software Foundation</name>
+		<url>http://www.apache.org</url>
+	</organization>
+
 	<licenses>
 		<license>
-			<name>Apache License version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
 		</license>
 	</licenses>
-	
+
 	<developers>
 		<developer>
 			<name>Xavier Dury</name>
@@ -41,7 +48,32 @@
 	</dependencies>
 
 	<properties>
+		<maven.compiler.source>1.6</maven.compiler.source>
+		<maven.compiler.target>1.6</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>download-licenses</id>
+						<goals>
+							<goal>download-licenses</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+					<licenseName>apache_v2</licenseName>
+					<quiet>true</quiet>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

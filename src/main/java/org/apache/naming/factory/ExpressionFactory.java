@@ -1,3 +1,22 @@
+/*
+ * #%L
+ * expression-factory
+ * %%
+ * Copyright (C) 2013 Apache Software Foundation
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package org.apache.naming.factory;
 
 import java.util.Hashtable;
@@ -45,34 +64,37 @@ import javax.naming.spi.ObjectFactory;
  */
 public class ExpressionFactory implements ObjectFactory {
 
-	public Object getObjectInstance(Object referenceObject, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
-		if (referenceObject instanceof Reference) {
-			Reference reference = (Reference) referenceObject;
-			RefAddr expressionRefAddr = reference.get("expression");
-			if (expressionRefAddr == null) {
-				throw new IllegalStateException("Expression parameter is required");
-			}
-			ELProcessor processor = new ELProcessor();
-			for (String importClass : split(reference, "importClass")) {
-				processor.getELManager().importClass(importClass);
-			}
-			for (String importPackage : split(reference, "importPackage")) {
-				processor.getELManager().importPackage(importPackage);
-			}
-			for (String importStatic : split(reference, "importStatic")) {
-				processor.getELManager().importStatic(importStatic);
-			}
-			processor.defineBean("name", name);
-			processor.defineBean("reference", reference);
-			processor.defineBean("nameContext", nameCtx);
-			processor.defineBean("environment", environment);
-			return processor.eval(expressionRefAddr.getContent().toString());
-		}
-		return null;
-	}
+  @Override
+  public Object getObjectInstance(Object referenceObject, Name name,
+      Context nameCtx, Hashtable<?, ?> environment) throws Exception {
+    if (referenceObject instanceof Reference) {
+      Reference reference = (Reference) referenceObject;
+      RefAddr expressionRefAddr = reference.get("expression");
+      if (expressionRefAddr == null) {
+        throw new IllegalStateException("Expression parameter is required");
+      }
+      ELProcessor processor = new ELProcessor();
+      for (String importClass : split(reference, "importClass")) {
+        processor.getELManager().importClass(importClass);
+      }
+      for (String importPackage : split(reference, "importPackage")) {
+        processor.getELManager().importPackage(importPackage);
+      }
+      for (String importStatic : split(reference, "importStatic")) {
+        processor.getELManager().importStatic(importStatic);
+      }
+      processor.defineBean("name", name);
+      processor.defineBean("reference", reference);
+      processor.defineBean("nameContext", nameCtx);
+      processor.defineBean("environment", environment);
+      return processor.eval(expressionRefAddr.getContent().toString());
+    }
+    return null;
+  }
 
-	private String[] split(Reference reference, String name) {
-		RefAddr refAddr = reference.get(name);
-		return refAddr == null ? new String[0] : refAddr.getContent().toString().split("[^\\w\\.\\$]+");
-	}
+  private String[] split(Reference reference, String name) {
+    RefAddr refAddr = reference.get(name);
+    return refAddr == null ? new String[0] : refAddr.getContent().toString()
+        .split("[^\\w\\.\\$]+");
+  }
 }
