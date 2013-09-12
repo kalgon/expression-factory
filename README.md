@@ -27,7 +27,7 @@ Try to avoid overloaded methods/constructors as much as possible in EL 3.0 expre
 | Name | Presence | Description |
 |------|----------|-------------|
 | name | required | The local JNDI name where the result will be bound |
-| factory required | Must be `org.apache.naming.factory.ExpressionFactory` |
+| factory | required | Must be `org.apache.naming.factory.ExpressionFactory` |
 | expression | required | The EL 3.0 expression whose result will be returned by the `ObjectFactory.getInstance()` method |
 | type | required? | The result type of the EL expression |
 | importClass | optional | Which classes should be imported to the `ELProcessor`. Use FQCN separated by spaces or commas |
