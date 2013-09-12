@@ -4,7 +4,7 @@
 
 Implementation of a javax.naming.spi.ObjectFactory for any Resource that can be computed from an EL 3.0 expression. 
 
-This factory can be configured in a <DefaultContext> or <Context> element in your conf/server.xml configuration file.
+This factory can be configured in a `<DefaultContext>` or `<Context>` element in your conf/server.xml configuration file.
 
 ## Remark
 
