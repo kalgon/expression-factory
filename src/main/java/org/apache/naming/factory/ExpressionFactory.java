@@ -64,6 +64,9 @@ import javax.naming.spi.ObjectFactory;
  */
 public class ExpressionFactory implements ObjectFactory {
 
+  /**
+   * @see ObjectFactory#getObjectInstance(Object, Name, Context, Hashtable)
+   */
   @Override
   public Object getObjectInstance(Object referenceObject, Name name,
       Context nameCtx, Hashtable<?, ?> environment) throws Exception {
@@ -92,6 +95,16 @@ public class ExpressionFactory implements ObjectFactory {
     return null;
   }
 
+  /**
+   * Helper method to split a RefAddr content into multiple values. The RefAddr
+   * is looked up from the given Reference with the given name.
+   * 
+   * @param reference
+   *          The reference
+   * @param name
+   *          The name.
+   * @return An array of strings.
+   */
   private String[] split(Reference reference, String name) {
     RefAddr refAddr = reference.get(name);
     return refAddr == null ? new String[0] : refAddr.getContent().toString()

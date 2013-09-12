@@ -2,15 +2,27 @@
 
 ## Introduction
 
-Implementation of a javax.naming.spi.ObjectFactory for any Resource that can be computed from an EL 3.0 expression. 
+Implementation of a `javax.naming.spi.ObjectFactory` for any Resource that can be computed from an EL 3.0 expression (JSR-341). 
 
 This factory can be configured in a `<DefaultContext>` or `<Context>` element in your conf/server.xml configuration file.
 
 ## Remark
 
-Try to avoid overloaded methods/constructors as much as possible in EL 3.0 expression as the ELProcessor will use the first one it will find. 
+Try to avoid overloaded methods/constructors as much as possible in EL 3.0 expression as the `ELProcessor` will use the first one it will find by reflection. 
 
 ## Usage
+
+    <Resource
+      name="some/jndi/name"
+      type="fully.qualified.class.name"
+      factory="org.apache.naming.factory.ExpressionFactory"
+      importClass="list.of.classes, which.will.be.used, in.the.expression"
+      importPackage="list.of.packages, which.will.be.used, in.the.expression"
+      importStatic="list.of.static.methods, which.will.be.used, in.the.expression"
+      expression="your EL 3.0 expression"
+    />
+
+## Examples
 
 ### Creating an URL resource
 
@@ -33,7 +45,7 @@ In context.xml or server.xml:
       expression="URI('http://some.service.url').toURL()"
     />
     
-### Creating an EHCache CacheManager with a configuration relative to $CATALINA_BASE
+### Creating an EHCache CacheManager Resource with a configuration file relative to $CATALINA_BASE
 
 In web.xml:
 
