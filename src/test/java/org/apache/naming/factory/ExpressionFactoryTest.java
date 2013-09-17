@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.UUID;
 
+import javax.el.ELProcessor;
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import javax.naming.spi.ObjectFactory;
@@ -34,6 +35,15 @@ import org.junit.Test;
 public class ExpressionFactoryTest {
 
   private final ObjectFactory factory = new ExpressionFactory();
+
+  @Test
+  public void elImplementationShouldWork() throws Exception {
+    ELProcessor processor = new ELProcessor();
+    processor.getELManager().importClass("java.io.File");
+    File file = (File) processor.eval("File('./')");
+    Assert.assertEquals(new File("./").getCanonicalPath(),
+        file.getCanonicalPath());
+  }
 
   @Test
   public void importClassShouldWork() throws Exception {
