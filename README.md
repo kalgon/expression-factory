@@ -4,11 +4,7 @@
 
 Implementation of a `javax.naming.spi.ObjectFactory` for any Resource that can be computed from an EL 3.0 expression (JSR-341). 
 
-This factory can be configured in a `<DefaultContext>` or `<Context>` element in your tomcat conf/server.xml configuration file.
-
-## Remark
-
-As of 2013-09-13, the current version of tomcat 8.0.0-SNAPSHOT present in apache maven snapshots repository will not make the tests pass.
+This factory can be configured in a `<DefaultContext>` or `<Context>` element in your tomcat 8.0.0-RC3+ conf/server.xml configuration file.
 
 ## Usage
 

@@ -31,13 +31,17 @@
 			<id>apache.snapshots</id>
 			<url>http://repository.apache.org/snapshots/</url>
 		</repository>
+		<repository>
+			<id>apache.orgapachetomcat</id>
+			<url>https://repository.apache.org/content/repositories/orgapachetomcat-080/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-jasper-el</artifactId>
-			<version>8.0-SNAPSHOT</version>
+			<version>8.0.0-RC3</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
