@@ -22,6 +22,9 @@ package org.apache.naming.factory;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.el.ELProcessor;
@@ -37,64 +40,76 @@ public class ExpressionFactoryTest {
   private final ObjectFactory factory = new ExpressionFactory();
 
   @Test
-  public void elImplementationShouldWork() throws Exception {
-    ELProcessor processor = new ELProcessor();
-    processor.getELManager().importClass("java.io.File");
-    File file = (File) processor.eval("File('./')");
-    Assert.assertEquals(new File("./").getCanonicalPath(),
-        file.getCanonicalPath());
-  }
-
-  @Test
   public void importClassShouldWork() throws Exception {
-    Reference reference = new Reference(null);
-    reference.add(new StringRefAddr("expression", "URI('file:./').toURL()"));
-    reference.add(new StringRefAddr("importClass", "java.net.URI"));
-    URL url = (URL) this.factory.getObjectInstance(reference, null, null, null);
+    Map<String, String> map = new HashMap<String, String>();
+    map.put("expression", "URI('file:./').toURL()");
+    map.put("importClass", "java.net.URI");
+    URL url = (URL) invokeFactory(map);
     Assert.assertEquals(new URI("file:./").toURL(), url);
   }
 
   @Test
   public void importMultipleClassesShouldWork() throws Exception {
-    Reference reference = new Reference(null);
-    reference
-        .add(new StringRefAddr("expression", "File(URI('file:/test.txt'))"));
-    reference
-        .add(new StringRefAddr("importClass", "java.net.URI,java.io.File"));
-    Assert.assertTrue(this.factory.getObjectInstance(reference, null, null,
-        null) instanceof File);
+    Map<String, String> map = new HashMap<String, String>();
+    map.put("expression", "File(URI('file:/test.txt'))");
+    map.put("importClass", "java.net.URI,java.io.File");
+    Assert.assertTrue(invokeFactory(map) instanceof File);
   }
 
   @Test
   public void importPackageShouldWork() throws Exception {
-    Reference reference = new Reference(null);
-    reference.add(new StringRefAddr("expression", "URI('file:./').toURL()"));
-    reference.add(new StringRefAddr("importPackage", "java.net"));
-    URL url = (URL) this.factory.getObjectInstance(reference, null, null, null);
+    Map<String, String> map = new HashMap<String, String>();
+    map.put("expression", "URI('file:./').toURL()");
+    map.put("importPackage", "java.net");
+    URL url = (URL) invokeFactory(map);
     Assert.assertEquals(new URI("file:./").toURL(), url);
   }
 
   @Test
   public void importStaticShouldWork() throws Exception {
-    Reference reference = new Reference(null);
-    reference.add(new StringRefAddr("expression", "randomUUID()"));
-    reference
-        .add(new StringRefAddr("importStatic", "java.util.UUID.randomUUID"));
-    Assert.assertTrue(this.factory.getObjectInstance(reference, null, null,
-        null) instanceof UUID);
+    Map<String, String> map = new HashMap<String, String>();
+    map.put("expression", "randomUUID()");
+    map.put("importStatic", "java.util.UUID.randomUUID");
+    Assert.assertTrue(invokeFactory(map) instanceof UUID);
   }
 
   @Test(expected = IllegalStateException.class)
   public void missingExpressionShouldFail() throws Exception {
-    this.factory.getObjectInstance(new Reference(null), null, null, null);
+    invokeFactory(Collections.<String, String> emptyMap());
   }
 
   @Test
   public void multipleExpressionsShouldWork() throws Exception {
+    Map<String, String> map = new HashMap<String, String>();
+    map.put("expression", "f='file:./';u=URI(f);u.toURL()");
+    map.put("importClass", "java.net.URI");
+    invokeFactory(map);
+  }
+
+  @Test
+  public void overloadedConstructorsShouldWork() throws Exception {
+    ELProcessor processor = new ELProcessor();
+    processor.getELManager().importClass("java.io.File");
+    processor.getELManager().importClass("java.net.URI");
+    File file = (File) processor.eval("File(URI('file:/'));File('./')");
+    Assert.assertEquals(new File("./").getCanonicalPath(),
+        file.getCanonicalPath());
+  }
+
+  @Test
+  public void overloadedMethodsShouldWork() throws Exception {
+    ELProcessor processor = new ELProcessor();
+    processor.getELManager().importClass("java.io.File");
+    String result = (String) processor
+        .eval("StringBuilder().append('a').append(42).toString()");
+    Assert.assertEquals(result, "a42");
+  }
+
+  private Object invokeFactory(Map<String, String> refAddrs) throws Exception {
     Reference reference = new Reference(null);
-    reference.add(new StringRefAddr("expression",
-        "f='file:./';u=URI(f);u.toURL()"));
-    reference.add(new StringRefAddr("importClass", "java.net.URI"));
-    this.factory.getObjectInstance(reference, null, null, null);
+    for (Map.Entry<String, String> entry : refAddrs.entrySet()) {
+      reference.add(new StringRefAddr(entry.getKey(), entry.getValue()));
+    }
+    return this.factory.getObjectInstance(reference, null, null, null);
   }
 }
